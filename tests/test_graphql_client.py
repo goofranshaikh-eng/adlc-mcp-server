@@ -34,7 +34,7 @@ def test_execute_query_http_error():
         data, errors = client.execute_query("{ salesOrders { id } }")
 
     assert data is None
-    assert errors == [{"message": "HTTP error: 500"}]
+    assert errors == [{"message": "HTTP error 500"}]
 
 
 def test_execute_query_network_error():
@@ -58,4 +58,15 @@ def test_execute_query_malformed_json():
 
     with patch("mcp.graphql_client.requests.post", return_value=mock_response):
         with pytest.raises(ValueError, match="malformed JSON"):
+            client.execute_query("{ salesOrders { id } }")
+
+
+def test_execute_query_non_dict_json():
+    client = GraphQLClient("http://example.com/graphql")
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = []
+
+    with patch("mcp.graphql_client.requests.post", return_value=mock_response):
+        with pytest.raises(ValueError, match="malformed JSON response: expected object"):
             client.execute_query("{ salesOrders { id } }")

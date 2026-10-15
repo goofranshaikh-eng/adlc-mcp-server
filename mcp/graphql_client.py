@@ -46,7 +46,7 @@ class GraphQLClient:
 
         Raises:
             NetworkError: if HTTP request fails (connection refused, timeout)
-            ValueError: if response JSON is malformed
+            ValueError: if response JSON is malformed or not a dict
         """
         payload: dict[str, Any] = {"query": query}
         if variables is not None:
@@ -63,7 +63,7 @@ class GraphQLClient:
             raise NetworkError(str(exc)) from exc
 
         if response.status_code >= 400:
-            return None, [{"message": f"HTTP error: {response.status_code}"}]
+            return None, [{"message": f"HTTP error {response.status_code}"}]
 
         try:
             body = response.json()

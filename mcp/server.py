@@ -137,9 +137,7 @@ def main() -> None:
         }
         sys.modules.update(sdk_modules)
         try:
-            init_options = server.create_initialization_options()
-            # Retain InitializationOptions import usage per LLD.
-            assert isinstance(init_options, InitializationOptions) or init_options is not None
+            init_options: InitializationOptions = server.create_initialization_options()
             async with stdio_server() as (read_stream, write_stream):
                 await server.run(
                     read_stream,
