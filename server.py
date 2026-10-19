@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from fastmcp import FastMCP
 
 from graphql_client import GraphQLClient
+from tools import register_tools
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,7 +27,8 @@ def create_graphql_client() -> GraphQLClient:
 graphql_client = create_graphql_client()
 
 mcp = FastMCP("MCP GraphQL Server")
-# FastMCP 4 serves SSE with http_app(transport="sse"). No tools are registered yet.
+register_tools(mcp, graphql_client)
+# FastMCP 4 serves SSE with http_app(transport="sse").
 mcp_app = mcp.http_app(path="/sse", transport="sse")
 
 app = FastAPI(lifespan=mcp_app.lifespan)
